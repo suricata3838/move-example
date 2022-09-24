@@ -1,0 +1,23 @@
+---
+compiled_package_info:
+  package_name: CoinSwap
+  address_alias_instantiation:
+    BasicCoin: 000000000000000000000000000000bc
+    CoinSwap: 000000000000000000000000000000c5
+    GoldCoin: 0000000000000000000000000000009c
+    SilverCoin: 0000000000000000000000000000005c
+    std: "00000000000000000000000000000001"
+  source_digest: 4B500288BD724295282603B12BEEC6BCB3D1FCE398DE449FD5548B351266F6A3
+  build_flags:
+    dev_mode: true
+    test_mode: true
+    generate_docs: false
+    generate_abis: false
+    install_dir: ~
+    force_recompilation: false
+    additional_named_addresses: {}
+    architecture: ~
+    fetch_deps_only: false
+dependencies:
+  - BasicCoin
+  - MoveStdlib
