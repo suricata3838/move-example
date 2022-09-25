@@ -2,7 +2,7 @@ module SilverCoin::SilverCoin {
     use std::signer;
     use BasicCoin::BasicCoin;
 
-    struct SilverCoin has drop {}
+    struct SilverCoin has drop, copy {}
 
     public fun setup_and_mint(account: &signer, amount: u64) {
         BasicCoin::publish_balance<SilverCoin>(account);

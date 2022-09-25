@@ -94,6 +94,7 @@ module NamedAddr::Uniswap {
         (coin1_removed, coin2_removed)
     }
     spec remove_liquidity {
+        // 
         pragma verify=false;
         let old_pool = global<Pool>(PoolAddr);
         let post new_pool = global<Pool>(PoolAddr);

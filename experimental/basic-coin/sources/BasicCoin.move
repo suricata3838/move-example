@@ -2,6 +2,7 @@
 module BasicCoin::BasicCoin {
     use std::error;
     use std::signer;
+    use std::debug;
 
     /// Error codes
     const ENOT_MODULE_OWNER: u64 = 0;
@@ -10,7 +11,7 @@ module BasicCoin::BasicCoin {
     const EALREADY_INITIALIZED: u64 = 3;
     const EEQUAL_ADDR: u64 = 4;
 
-    struct Coin<phantom CoinType> has store {
+    struct Coin<phantom CoinType> has store{
         value: u64
     }
 
@@ -21,6 +22,7 @@ module BasicCoin::BasicCoin {
     public fun publish_balance<CoinType>(account: &signer) {
         let empty_coin = Coin<CoinType> { value: 0 };
         assert!(!exists<Balance<CoinType>>(signer::address_of(account)), error::already_exists(EALREADY_HAS_BALANCE));
+        debug::print(&empty_coin.value);// 0
         move_to(account, Balance<CoinType> { coin:  empty_coin });
     }
 
@@ -62,8 +64,11 @@ module BasicCoin::BasicCoin {
         // TBD
     }
 
-
+    // TODO!!!
     public fun balance_of<CoinType>(owner: address): u64 acquires Balance {
+        debug::print(&owner);
+        // assert!(exists<Balance<CoinType>>(owner), 1);
+        debug::print<Coin<CoinType>>(&borrow_global<Balance<CoinType>>(owner).coin);
         borrow_global<Balance<CoinType>>(owner).coin.value
     }
 
@@ -75,9 +80,12 @@ module BasicCoin::BasicCoin {
     /// Transfers `amount` of tokens from `from` to `to`. This method requires a witness with `CoinType` so that the
     /// module that owns `CoinType` can decide the transferring policy.
     public fun transfer<CoinType: drop>(from: &signer, to: address, amount: u64, _witness: CoinType) acquires Balance {
+        debug::print(&to);//0xc5
         let from_addr = signer::address_of(from);
         assert!(from_addr != to, EEQUAL_ADDR);
+        debug::print(&from_addr);//0x02
         let check = withdraw<CoinType>(from_addr, amount);
+
         deposit<CoinType>(to, check);
     }
 
@@ -100,6 +108,7 @@ module BasicCoin::BasicCoin {
     }
 
     fun withdraw<CoinType>(addr: address, amount: u64) : Coin<CoinType> acquires Balance {
+        debug::print(&addr);
         let balance = balance_of<CoinType>(addr);
         assert!(balance >= amount, EINSUFFICIENT_BALANCE);
         let balance_ref = &mut borrow_global_mut<Balance<CoinType>>(addr).coin.value;
@@ -146,5 +155,35 @@ module BasicCoin::BasicCoin {
 
         let post balance_post = global<Balance<CoinType>>(addr).coin.value;
         ensures balance_post == balance + amount;
+    }
+
+    struct MyOddCoin has drop {}
+
+    #[test(account = @0xC0FFEE)]
+    fun test_publish_balance(account: &signer) acquires Balance{
+
+        // let addr = signer::address_of(account);
+        publish_balance<MyOddCoin>(account);
+        // BasicCoin::mint<MyOddCoin>(account);
+
+        assert!(balance_of<MyOddCoin>(@0xC0FFEE) == 0, 0);
+        // assert!(borrow_global<Balance<Coin>>(@0xC0FFEE).value == 0, 1);
+    }
+}
+
+module 0x03::MyTestCoin {
+    use BasicCoin::BasicCoin;
+
+    struct MyTestCoin has drop {}
+
+    #[test(account = @0xC0FFEE)]
+    fun test_publish_balance2(account: &signer){
+
+        // let addr = signer::address_of(account);
+        BasicCoin::publish_balance<MyTestCoin>(account);
+        // BasicCoin::mint<MyOddCoin>(account);
+
+        assert!(BasicCoin::balance_of<MyTestCoin>(@0xC0FFEE) == 0, 0);
+        // assert!(borrow_global<Balance<Coin>>(@0xC0FFEE).value == 0, 1);
     }
 }

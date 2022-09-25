@@ -7,3 +7,4 @@ BasicCoin = "0xBC"
 
 [dependencies]
 MoveStdlib = { local = "../../../../move-stdlib/", addr_subst = { "std" = "0x1" } }
+MoveNursery = { local = "../../../../move-stdlib/nursery"}
