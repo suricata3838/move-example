@@ -10,6 +10,10 @@ module GoldCoin::GoldCoin {
         
     }
 
+    public fun balance_of(owner: address) {
+        BasicCoin::balance_of<GoldCoin>(owner);
+    }
+
     public fun transfer(from: &signer, to: address, amount: u64) {
         BasicCoin::transfer<GoldCoin>(from, to, amount, GoldCoin {});
     }

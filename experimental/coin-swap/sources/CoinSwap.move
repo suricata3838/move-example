@@ -138,23 +138,23 @@ module CoinSwap::MyCoinSwap {
     use GoldCoin::GoldCoin;
     use SilverCoin::SilverCoin;
 
-    struct GoldCoin has drop, copy {}
-    struct SilverCoin has drop, copy {} 
-
     #[test(account = @0x01)]
     fun test_coin_type(account: &signer) {
         GoldCoin::setup_and_mint(account, 100);// account, amount
-        SilverCoin::setup_and_mint(account, 200);// account, amount    
-        let gold_bal = BasicCoin::balance_of<GoldCoin>(signer::address_of(account));
+        SilverCoin::setup_and_mint(account, 200);// account, amount  
+        // let gold_bal = BasicCoin::balance_of<GoldCoin>(signer::address_of(account));
+
+        // Error: Invalid module access!?
+        let gold_bal = GoldCoin::balacne_of(@0x01);
         debug::print(&gold_bal);
     }
 
     #[test(coinswap = @CoinSwap, requestor = @0x02)]
     fun test_create_pool(coinswap:&signer, requestor: &signer) {
         test_coin_type(requestor);
-        let gold_bal = BasicCoin::balance_of<GoldCoin>(signer::address_of(requestor));
-        debug::print(&gold_bal);
-        assert!(gold_bal == 100, 1);
+        // let gold_bal = BasicCoin::balance_of<GoldCoin>(signer::address_of(requestor));
+        // debug::print(&gold_bal);
+        // assert!(gold_bal == 100, 1);
 
         // let goldCoin = GoldCoin(goldcoin_addr);
         // let silverCoin = SilverCoin(silvercoin_addr);
@@ -162,13 +162,16 @@ module CoinSwap::MyCoinSwap {
         let coin2_amount = 20;
         let share = 1;
 
-        CoinSwap::create_pool<GoldCoin, SilverCoin>(
-            coinswap,
-            requestor,
-            coin1_amount,
-            coin2_amount,
-            share,
-            GoldCoin{},
-            SilverCoin{});
+
+        // Error: All structs can only be constructed in the module in which they are declared!!
+        // CoinSwap::create_pool<GoldCoin, SilverCoin>(
+        //     coinswap,
+        //     requestor,
+        //     coin1_amount,
+        //     coin2_amount,
+        //     share,
+        //     GoldCoin{},
+        //     SilverCoin{}
+        // );
     }
 }
