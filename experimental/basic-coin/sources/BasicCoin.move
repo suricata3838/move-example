@@ -171,19 +171,45 @@ module BasicCoin::BasicCoin {
     }
 }
 
-module 0x03::MyTestCoin {
+module 0x02::MyTestCoin {
     use BasicCoin::BasicCoin;
 
     struct MyTestCoin has drop {}
 
-    #[test(account = @0xC0FFEE)]
+    public fun publish_balance(account: &signer){
+        BasicCoin::publish_balance<MyTestCoin>(account);
+    }
+
+    #[test(account = @0xC0EEEE)]// PASS
     fun test_publish_balance2(account: &signer){
 
         // let addr = signer::address_of(account);
-        BasicCoin::publish_balance<MyTestCoin>(account);
+        publish_balance(account);
         // BasicCoin::mint<MyOddCoin>(account);
 
-        assert!(BasicCoin::balance_of<MyTestCoin>(@0xC0FFEE) == 0, 0);
+        assert!(BasicCoin::balance_of<MyTestCoin>(@0xC0EEEE) == 0, 0);
+        // assert!(borrow_global<Balance<Coin>>(@0xC0FFEE).value == 0, 1);
+    }
+}
+
+
+module 0x03::BasicCoinTest {
+    // use BasicCoin::BasicCoin;
+    use 0x02::MyTestCoin;
+
+    // Determined twice !!
+    //struct MyTestCoin has drop{}
+
+    #[test(account = @0xC0FFEE)]// FAIL
+    fun test_publish_balance3(account: &signer){
+
+        // let addr = signer::address_of(account);
+        MyTestCoin::publish_balance(account);
+        // BasicCoin::mint<MyOddCoin>(account);
+
+        // Using different CoinType!
+        // how to get the struct MyTestCoin ??
+        // assert!(BasicCoin::balance_of<MyTestCoin>(@0xC0FFEE) == 0, 0);
         // assert!(borrow_global<Balance<Coin>>(@0xC0FFEE).value == 0, 1);
     }
 }
